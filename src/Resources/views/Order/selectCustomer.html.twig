@@ -1,7 +1,7 @@
-{% extends '@SyliusAdmin/layout.html.twig' %}
+{% extends '@SyliusAdmin/shared/layout/base.html.twig' %}
 
 {% form_theme selectCustomerForm '@SyliusAdminOrderCreationPlugin/Order/selectCustomerTheme.html.twig' %}
-{% form_theme createCustomerForm '@SyliusAdmin/Form/theme.html.twig' %}
+{% form_theme createCustomerForm '@SyliusAdmin/shared/form_theme.html.twig' %}
 
 {% block pre_content %}
     <h2 class="ui header">
@@ -13,7 +13,9 @@
     </h2>
 {% endblock %}
 
-{% block content %}
+{% block body %}
+    {% hook 'add_admin.custom' %}
+<div class="page-wrapper">
     <div class="ui center aligned basic segment">
         {{ form_start(selectCustomerForm, {'method': 'GET'})}}
         {{ form_row(selectCustomerForm.customer) }} <br /><br />
@@ -36,6 +38,7 @@
         </button> <br /><br />
         {{ form_end(createCustomerForm) }}
     </div>
+</div>
 {% endblock %}
 
 {% block javascripts %}
@@ -44,62 +47,60 @@
     <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
     <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
     <script>
-        $(document).ready(function() {
-            function addErrorMessage(element, message){
-                element.after(`<div class="ui red pointing label sylius-validation-error">${message}</div>`);
+        document.addEventListener("DOMContentLoaded", function() {
+            function addErrorMessage(element, message) {
+                let errorDiv = document.createElement("div");
+                errorDiv.className = "ui red pointing label sylius-validation-error";
+                errorDiv.textContent = message;
+                element.parentNode.insertBefore(errorDiv, element.nextSibling);
             }
 
-            $('#order_select_customer_submit').on('click', function(e) {
+            document.getElementById("order_select_customer_submit").addEventListener("click", function(e) {
                 e.preventDefault();
 
-                let form = $(this).parents('form');
-                let $customer = form.find('[name*="[customer]"]');
-                let customerId = $customer.val();
-                let channelCode = form.find('select[name*="[channel]"]').val();
+                let form = this.closest("form");
+                let customerInput = form.querySelector('[name*="[customer]"]');
+                let customerId = customerInput.value;
+                let channelCode = form.querySelector('select[name*="[channel]"]').value;
 
                 if (customerId.length) {
-                    form.attr('action', Routing.generate(
-                        'sylius_admin_order_creation_order_create',
+                    form.setAttribute("action", Routing.generate(
+                        "sylius_admin_order_creation_order_create",
                         {
                             'customerId': customerId,
                             'channelCode': channelCode
                         },
                         true
                     ));
-
                     form.submit();
-
                 } else {
-                    addErrorMessage($customer.parent(), "{{ 'sylius_admin_order_creation.ui.no_customer_selected'|trans }}");
+                    addErrorMessage(customerInput.parentNode, "{{ 'sylius_admin_order_creation.ui.no_customer_selected'|trans }}");
                 }
             });
 
-            $('#order_create_new_customer_submit').on('click', function(e) {
+            document.getElementById("order_create_new_customer_submit").addEventListener("click", function(e) {
                 e.preventDefault();
 
-                let form = $(this).parents('form');
-
-                let $customerEmailInput = form.find('[name*="[customerEmail]"]');
-                let customerEmail = $customerEmailInput.val();
-                let channelCode = form.find('[name*="[channel]"]').val();
+                let form = this.closest("form");
+                let customerEmailInput = form.querySelector('[name*="[customerEmail]"]');
+                let customerEmail = customerEmailInput.value;
+                let channelCode = form.querySelector('[name*="[channel]"]').value;
 
                 if (customerEmail) {
-                    form.attr('action', Routing.generate(
-                        'sylius_admin_order_creation_customer_create',
+                    form.setAttribute("action", Routing.generate(
+                        "sylius_admin_order_creation_customer_create",
                         {
                             'customerEmail': customerEmail,
                             'channelCode': channelCode
                         },
                         true
                     ));
-
                     form.submit();
-
                     return;
                 }
 
-                if (form.find('.sylius-validation-error').length === 0) {
-                    addErrorMessage($customerEmailInput.parent(), "{{ 'sylius_admin_order_creation.ui.customer_email'|trans }}");
+                if (!form.querySelector(".sylius-validation-error")) {
+                    addErrorMessage(customerEmailInput.parentNode, "{{ 'sylius_admin_order_creation.ui.customer_email'|trans }}");
                 }
             });
         });

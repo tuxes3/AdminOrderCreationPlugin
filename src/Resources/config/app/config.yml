@@ -9,7 +9,7 @@ sylius_grid:
                     create:
                         type: default
                         label: sylius.ui.create
-                        icon: plus
+                        #icon: plus
                         options:
                             link:
                                 route: sylius_admin_order_creation_select_order_customer
@@ -18,7 +18,7 @@ sylius_grid:
                     reorder:
                         type: default
                         label: sylius_admin_order_creation.ui.reorder
-                        icon: 'cart plus'
+                        #icon: 'cart plus'
                         options:
                             link:
                                 route: sylius_admin_order_creation_reorder

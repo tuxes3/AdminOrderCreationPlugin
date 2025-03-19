@@ -1,10 +1,10 @@
-{% import '@SyliusAdmin/Macro/breadcrumb.html.twig' as breadcrumb %}
+{% import '@SyliusAdmin/shared/helper/breadcrumbs.html.twig' as breadcrumb %}
 
-{% set breadcrumbs = [
-    { label: 'sylius.ui.administration'|trans, url: path('sylius_admin_dashboard') },
-    { label: 'sylius.ui.orders'|trans, url: path('sylius_admin_order_index') },
-    { label: 'sylius.ui.new'|trans }
+${% set breadcrumbs = [
+    { name: 'sylius.ui.administration'|trans, url: path('sylius_admin_dashboard') },
+    { name: 'sylius.ui.orders'|trans, url: path('sylius_admin_order_index') },
+    { name: 'sylius.ui.new'|trans }
 ]
 %}
 
-{{ breadcrumb.crumble(breadcrumbs) }}
+{{ breadcrumb.breadcrumbs(breadcrumbs) }}

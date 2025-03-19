@@ -13,7 +13,7 @@ final class NewOrderCustomerSelectType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('customer', CustomerAutocompleteChoiceType::class, [
+            ->add('customer', CustomerAutocompleteType::class, [
                 'multiple' => false,
                 'required' => true,
             ])
@@ -23,7 +23,7 @@ final class NewOrderCustomerSelectType extends AbstractType
         ;
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'sylius_admin_order_creation_new_order_customer_select';
     }

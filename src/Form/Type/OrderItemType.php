@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Sylius\AdminOrderCreationPlugin\Form\Type;
 
+use Sylius\AdminOrderCreationPlugin\Doctrine\ORM\ProductVariantRepositoryInterface;
+use Sylius\Bundle\AdminBundle\Form\Type\ProductVariantAutocompleteType;
 use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
-use Sylius\Bundle\ResourceBundle\Form\Type\ResourceAutocompleteChoiceType;
 use Symfony\Component\Form\DataMapperInterface;
+use Symfony\Component\Form\Extension\Core\DataMapper\DataMapper;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -14,19 +16,22 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-final class OrderItemType extends AbstractResourceType
+final class OrderItemType extends AbstractResourceType implements DataMapperInterface
 {
-    /** @var DataMapperInterface */
-    private $dataMapper;
+    /** @var ProductVariantRepositoryInterface */
+    private $productVariantRepository;
+
+    private DataMapperInterface $dataMapper;
 
     public function __construct(
         string $dataClass,
-        DataMapperInterface $dataMapper,
-        array $validationGroups = [],
+        array $validationGroups,
+        ProductVariantRepositoryInterface $productVariantRepository,
     ) {
         parent::__construct($dataClass, $validationGroups);
 
-        $this->dataMapper = $dataMapper;
+        $this->productVariantRepository = $productVariantRepository;
+        $this->dataMapper = new DataMapper();
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -37,11 +42,8 @@ final class OrderItemType extends AbstractResourceType
                 'label' => 'sylius.ui.quantity',
                 'empty_data' => 1,
             ])
-            ->add('variant', ResourceAutocompleteChoiceType::class, [
+            ->add('variant', ProductVariantAutocompleteType::class, [
                 'label' => 'sylius.ui.variant',
-                'choice_name' => 'descriptor',
-                'choice_value' => 'code',
-                'resource' => 'sylius.product_variant',
             ])
             ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($options): void {
                 $event
@@ -70,7 +72,7 @@ final class OrderItemType extends AbstractResourceType
 
                 $event->setData($data);
             })
-            ->setDataMapper($this->dataMapper)
+            ->setDataMapper($this)
         ;
     }
 
@@ -87,5 +89,15 @@ final class OrderItemType extends AbstractResourceType
     public function getBlockPrefix(): string
     {
         return 'sylius_admin_order_creation_new_order_order_item';
+    }
+
+    public function mapDataToForms(mixed $viewData, \Traversable $forms): void
+    {
+        $this->dataMapper->mapDataToForms($viewData, $forms);
+    }
+
+    public function mapFormsToData(\Traversable $forms, mixed &$viewData): void
+    {
+        $this->dataMapper->mapFormsToData($forms, $viewData);
     }
 }

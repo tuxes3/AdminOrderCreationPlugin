@@ -1,4 +1,4 @@
-{% extends '@SyliusAdmin/layout.html.twig' %}
+{% extends '@SyliusAdmin/shared/layout/base.html.twig' %}
 
 {% block title %}{{ 'sylius.ui.new_order'|trans }} {{ parent() }}{% endblock %}
 
@@ -12,7 +12,9 @@
     {% set channel_code = app.request.attributes.get('channelCode') %}
 {% endif %}
 
-{% block content %}
+{% block body %}
+    {% hook 'add_admin.custom' %}
+<div class="page-wrapper">
     <div class="ui stackable two column grid">
         <div class="column">
             <h1 class="ui header">
@@ -25,6 +27,7 @@
     {% include '@SyliusAdminOrderCreationPlugin/Order/Create/_form.html.twig' with {
         'action': path('sylius_admin_order_creation_order_preview', {'customerId': customer_id, 'channelCode': channel_code})
     } %}
+</div>
 {% endblock %}
 
 {% block javascripts %}
@@ -32,7 +35,7 @@
     <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
     <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
     <script>
-        $(document).ready(function() {
+        document.addEventListener("DOMContentLoaded", function() {
             const targetNode = document.querySelector('#sylius_admin_order_creation_new_order_payments');
             const observer = new MutationObserver(mutations => {
                 mutations.forEach(mutation => {
@@ -50,29 +53,29 @@
                 subtree: true,
             });
 
-            $('#sylius_admin_order_creation_new_order_shipments [data-form-collection="add"]').on('click', function(e) {
+            document.querySelector('#sylius_admin_order_creation_new_order_shipments [data-form-collection="add"]').addEventListener('click', function(e) {
                 if (!canShippingMethodBeProvided()) {
                     e.stopPropagation();
                     return;
                 }
-
                 loadAvailableShippingMethods();
             });
 
-            $('#shipmentsAndPaymentsTab').on('click', function(e) {
+            document.querySelector('#shipmentsAndPaymentsTab').addEventListener('click', function(e) {
+                const shipmentsAndPayments = document.querySelector('#shipmentsAndPayments');
                 if (canShippingMethodBeProvided()) {
-                    $('#shipmentsAndPayments').find('.invalid-data-message').hide();
+                    shipmentsAndPayments.querySelector('.invalid-data-message').style.display = 'none';
                 } else {
-                    $('#shipmentsAndPayments').find('.invalid-data-message').show();
+                    shipmentsAndPayments.querySelector('.invalid-data-message').style.display = 'block';
                 }
 
-                if ($('#shipmentsAndPayments select').length != 0) {
+                if (shipmentsAndPayments.querySelectorAll('select').length !== 0) {
                     loadAvailableShippingMethods();
                 }
             });
 
-            $('[data-form-collection="item"] .sylius-autocomplete.dropdown').each(function() {
-                $(this).dropdown('set text', $(this).find('input[type="hidden"]').val());
+            document.querySelectorAll('[data-form-collection="item"] .sylius-autocomplete.dropdown').forEach(element => {
+                element.querySelector('input[type="hidden"]').value && (element.textContent = element.querySelector('input[type="hidden"]').value);
             });
 
             function loadAvailableShippingMethods() {
@@ -80,40 +83,41 @@
                     return;
                 }
 
-                let form = $('form');
-                form.addClass('loading');
+                let form = document.querySelector('form');
+                form.classList.add('loading');
 
                 Routing.setScheme(location.protocol.replace(':', ''));
 
-                $.ajax({
-                    type: "GET",
-                    url: Routing.generate(
-                        'sylius_admin_order_creation_ajax_provide_available_shipping_methods',
-                        { 'customerId': '{{ customer_id }}', 'channelCode': '{{ channel_code }}', 'shipmentNumber': '0' },
-                        true
-                    ),
-                    data: form.serializeArray(),
-                    dataType: "json",
-                    accept: "application/json",
-                    success: function(data) {
-                        let lastShipment = $('#sylius_admin_order_creation_new_order_shipments [data-form-collection="list"]').find('[data-form-collection="item"]:last-child');
+                fetch(Routing.generate(
+                    'sylius_admin_order_creation_ajax_provide_available_shipping_methods',
+                    { 'customerId': '{{ customer_id }}', 'channelCode': '{{ channel_code }}', 'shipmentNumber': '0' },
+                    true
+                ), {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    },
+                    body: new URLSearchParams(new FormData(form))
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        let lastShipment = document.querySelector('#sylius_admin_order_creation_new_order_shipments [data-form-collection="list"] [data-form-collection="item"]:last-child');
                         let selectBody = '';
 
-                        $.each(data, function(key, value) {
-                            selectBody += '<option value="'+key+'">'+value+'</option>';
-                        });
+                        for (const key in data) {
+                            selectBody += `<option value="${key}">${data[key]}</option>`;
+                        }
 
-                        lastShipment.find('select').html(selectBody);
-                        form.removeClass('loading');
-                    }
-                });
+                        lastShipment.querySelector('select').innerHTML = selectBody;
+                        form.classList.remove('loading');
+                    })
+                    .catch(error => console.error('Error:', error));
             }
 
             function canShippingMethodBeProvided() {
-                return $('#sylius_admin_order_creation_new_order_items [data-form-collection="item"]').length > 0 &&
-                    $('#sylius_admin_order_creation_new_order_shippingAddress_countryCode').val() !== '' &&
-                    $('#sylius_admin_order_creation_new_order_localeCode').val() !== ''
-                ;
+                return document.querySelectorAll('#sylius_admin_order_creation_new_order_items [data-form-collection="item"]').length > 0 &&
+                    document.querySelector('#sylius_admin_order_creation_new_order_shippingAddress_countryCode').value !== '' &&
+                    document.querySelector('#sylius_admin_order_creation_new_order_localeCode').value !== '';
             }
         });
     </script>

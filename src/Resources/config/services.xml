@@ -20,6 +20,11 @@
             <argument type="service" id="twig" />
         </service>
 
+        <service id="Sylius\AdminOrderCreationPlugin\OrderProcessing\SetQuantityProcessor">
+            <argument type="service" id="sylius.factory.order_item_unit" />
+            <tag name="sylius.order_processor" priority="9999" />
+        </service>
+
         <service id="Sylius\AdminOrderCreationPlugin\Controller\OrderCreateAction">
             <argument type="service" id="Sylius\AdminOrderCreationPlugin\Factory\OrderFactory" />
             <argument type="service" id="form.factory" />
@@ -32,7 +37,7 @@
         </service>
 
         <service id="Sylius\AdminOrderCreationPlugin\Provider\AvailableShippingMethodsListProvider">
-            <argument type="service" id="sylius.shipping_methods_resolver" />
+            <argument type="service" id="sylius.resolver.shipping_methods" />
         </service>
 
         <service id="Sylius\AdminOrderCreationPlugin\Form\Type\NewOrderCustomerSelectType">
@@ -41,6 +46,11 @@
         <service id="Sylius\AdminOrderCreationPlugin\Form\Type\NewOrderCustomerCreateType">
             <tag name="form.type" />
         </service>
+        <service id="Sylius\AdminOrderCreationPlugin\Form\Type\CustomerAutocompleteType">
+            <argument>%sylius.model.customer.class%</argument>
+            <tag name="form.type" />
+            <tag name="ux.entity_autocomplete_field" />
+        </service>
         <service id="Sylius\AdminOrderCreationPlugin\Form\Type\NewOrderType">
             <argument>%sylius.model.order.class%</argument>
             <argument>%sylius.form.type.order.validation_groups%</argument>
@@ -48,8 +58,8 @@
         </service>
         <service id="Sylius\AdminOrderCreationPlugin\Form\Type\OrderItemType">
             <argument>%sylius.model.order_item.class%</argument>
-            <argument type="service" id="sylius.form.data_mapper.order_item_quantity" />
             <argument>%sylius.form.type.order_item.validation_groups%</argument>
+            <argument type="service" id="sylius.repository.product_variant" />
             <tag name="form.type" />
         </service>
         <service id="Sylius\AdminOrderCreationPlugin\Form\Type\ShipmentType">

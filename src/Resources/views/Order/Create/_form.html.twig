@@ -45,7 +45,14 @@
         </div>
     </div>
 
-    {% include '@SyliusUi/Form/Buttons/_create.html.twig' with {'paths': {'cancel': path('sylius_admin_order_index')}} %}
+    {% with {'paths': {'cancel': path('sylius_admin_order_index')}} %}
+        <div class="ui hidden divider"></div>
+        <div class="ui buttons">
+            <button class="ui labeled icon primary button" type="submit"><i class="plus icon"></i>{{- 'sylius.ui.create'|trans -}}</button>
+            <a href="{{ path|default(app.request.headers.get('referer')) }}" class="ui button">{{ 'sylius.ui.cancel'|trans }}</a>
+        </div>
+        <a href="{{ path|default(app.request.headers.get('referer')) }}" class="ui button">{{ 'sylius.ui.cancel'|trans }}</a>
+    {% endwith %}
 
     {{ form_row(form._token) }}
     {{ form_end(form, {'render_rest': false}) }}
