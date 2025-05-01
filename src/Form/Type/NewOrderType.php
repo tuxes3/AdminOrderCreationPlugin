@@ -10,6 +10,7 @@ use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -83,10 +84,9 @@ final class NewOrderType extends AbstractResourceType
                         'choices' => $channel->getLocales(),
                         'empty_data' => $order->getLocaleCode(),
                     ])
-                    ->add('currencyCode', CurrencyCodeChoiceType::class, [
+                    ->add('currencyCode', HiddenType::class, [
                         'label' => false,
-                        'choices' => $channel->getCurrencies(),
-                        'empty_data' => $order->getCurrencyCode(),
+                        'data' => 'CHF'
                     ])
                 ;
             })
