@@ -15,30 +15,44 @@
 
 {% block body %}
     {% hook 'add_admin.custom' %}
-<div class="page-wrapper">
-    <div class="ui center aligned basic segment">
-        {{ form_start(selectCustomerForm, {'method': 'GET'})}}
-        {{ form_row(selectCustomerForm.customer) }} <br /><br />
-        {{ form_row(selectCustomerForm.channel, {'attr': {'class': 'ui fluid selection dropdown'}}) }} <br /><br />
-        <button class="ui blue submit button" id="order_select_customer_submit">{{ 'sylius.ui.next'|trans }}</button>
-        {{ form_end(selectCustomerForm) }}
-    </div>
-    <div class="ui horizontal divider">
-            {{ 'sylius.ui.or'|trans }}
+    <div class="page-wrapper">
+
+        <div class="text-center mb-5">
+            {{ form_start(selectCustomerForm, {'method': 'GET'}) }}
+            <div class="mb-3">
+                {{ form_row(selectCustomerForm.customer) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(selectCustomerForm.channel, {'attr': {'class': 'form-select'}}) }}
+            </div>
+            <button class="btn btn-primary" id="order_select_customer_submit">{{ 'sylius.ui.next'|trans }}</button>
+            {{ form_end(selectCustomerForm) }}
+        </div>
+
+        <div class="text-center my-4">
+            <div class="d-inline-block px-3 bg-light text-muted rounded">{{ 'sylius.ui.or'|trans }}</div>
+        </div>
+
+        <div class="text-center">
+            {{ form_start(createCustomerForm, {'method': 'GET'}) }}
+            <div class="mb-3">
+                <input type="email"
+                       class="form-control"
+                       name="{{ createCustomerForm.customerEmail.vars.full_name }}"
+                       value="{{ createCustomerForm.customerEmail.vars.value }}"
+                       placeholder="{{ 'sylius_admin_order_creation.ui.new_customer_email'|trans }}">
+            </div>
+            <div class="mb-3">
+                {{ form_row(createCustomerForm.channel, {'attr': {'class': 'form-select'}}) }}
+            </div>
+            <button class="btn btn-success" id="order_create_new_customer_submit">
+                <i class="bi bi-plus-lg me-1"></i>{{ 'sylius_admin_order_creation.ui.create_new'|trans }}
+            </button>
+            {{ form_end(createCustomerForm) }}
+        </div>
+
     </div>
 
-    <div class="ui center aligned basic segment">
-        {{ form_start(createCustomerForm, {'method': 'GET'})}}
-        <div class="ui input fluid ">
-            {{ form_widget(createCustomerForm.customerEmail, {'attr': {'placeholder': 'sylius_admin_order_creation.ui.new_customer_email'|trans}}) }}
-        </div> <br /><br />
-        {{ form_row(createCustomerForm.channel, {'attr': {'class': 'ui fluid selection dropdown'}}) }} <br /><br />
-        <button class="ui green right labeled icon button" id="order_create_new_customer_submit">
-            <i class="plus icon"></i> {{ 'sylius_admin_order_creation.ui.create_new'|trans }}
-        </button> <br /><br />
-        {{ form_end(createCustomerForm) }}
-    </div>
-</div>
 {% endblock %}
 
 {% block javascripts %}

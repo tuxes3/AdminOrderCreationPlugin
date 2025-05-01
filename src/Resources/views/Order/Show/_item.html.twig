@@ -10,29 +10,29 @@
 {% set product = variant.product %}
 
 <tr>
-    <td class="single line">
+    <td class="align-middle">
         {% include '@SyliusAdmin/Product/_info.html.twig' %}
     </td>
-    <td class="right aligned unit-price">
+    <td class="text-end align-middle">
         {{ money.format(item.unitPrice, order.currencyCode) }}
     </td>
-    <td class="right aligned discounted-unit-price">
+    <td class="text-end align-middle">
         {{ money.format(item.discountedUnitPrice, order.currencyCode) }}
     </td>
-    <td class="right aligned quantity">
+    <td class="text-end align-middle">
         {{ item.quantity }}
     </td>
-    <td class="right aligned subtotal">
+    <td class="text-end align-middle">
         {{ money.format(item.subtotal, order.currencyCode) }}
     </td>
-    <td class="right aligned discount">
+    <td class="text-end align-middle">
         {% set itemDiscountTotal = item.getAdjustmentsTotalRecursively(orderPromotionAdjustment) + item.getAdjustmentsTotalRecursively(orderItemDiscountAdjustment) %}
         {{ money.format(itemDiscountTotal, order.currencyCode) }}
     </td>
-    <td class="right aligned tax">
+    <td class="text-end align-middle">
         {{ money.format(item.taxTotal, order.currencyCode) }}
     </td>
-    <td class="right aligned total">
+    <td class="text-end align-middle">
         {{ money.format(item.total, order.currencyCode) }}
     </td>
 </tr>

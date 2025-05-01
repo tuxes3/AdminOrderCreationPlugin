@@ -14,20 +14,20 @@
 
 {% block body %}
     {% hook 'add_admin.custom' %}
-<div class="page-wrapper">
-    <div class="ui stackable two column grid">
-        <div class="column">
-            <h1 class="ui header">
-                <i class="circular plus icon"></i>
-                <div class="content">{{ 'sylius.ui.new_order'|trans }}</div>
-            </h1>
-            {% include '@SyliusAdminOrderCreationPlugin/Order/Create/_breadcrumb.html.twig' %}
+    <div class="page-wrapper">
+        <div class="row mb-3">
+            <div class="col">
+                <h1 class="h3">
+                    <i class="bi bi-plus-circle me-2"></i>{{ 'sylius.ui.new_order'|trans }}
+                </h1>
+                {% include '@SyliusAdminOrderCreationPlugin/Order/Create/_breadcrumb.html.twig' %}
+            </div>
         </div>
+        {% include '@SyliusAdminOrderCreationPlugin/Order/Create/_form.html.twig' with {
+            'action': path('sylius_admin_order_creation_order_preview', {'customerId': customer_id, 'channelCode': channel_code})
+        } %}
     </div>
-    {% include '@SyliusAdminOrderCreationPlugin/Order/Create/_form.html.twig' with {
-        'action': path('sylius_admin_order_creation_order_preview', {'customerId': customer_id, 'channelCode': channel_code})
-    } %}
-</div>
+
 {% endblock %}
 
 {% block javascripts %}

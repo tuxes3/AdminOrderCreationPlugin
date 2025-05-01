@@ -1,57 +1,69 @@
-<div class="ui segment">
-    {{ form_start(form, {'action': action, 'attr': {'class': 'ui loadable form', 'novalidate': 'novalidate'}}) }}
+<div class="card p-4 mb-4">
+    {{ form_start(form, {'action': action, 'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
 
-    <div class="ui styled fluid accordion">
-        <div class="title active">
-            <i class="dropdown icon"></i> {{ 'sylius.ui.items'|trans }}
-        </div>
-        <div id="items" class="content active">
-            {{ form_row(form.items) }}
-        </div>
-
-        <div class="title">
-            <i class="dropdown icon"></i> {{ 'sylius.ui.shipping_address'|trans }} &amp; {{ 'sylius.ui.billing_address'|trans }}
-        </div>
-        <div class="content">
-            <div class="ui horizontal segments">
-                <div class="ui segment">{{ form_row(form.shippingAddress) }}</div>
-                <div class="ui segment">{{ form_row(form.billingAddress) }}</div>
-            </div>
-        </div>
-
-        <div id="localeTab" class="title">
-            <i class="dropdown icon"></i> {{ 'sylius.ui.locale'|trans }} & {{ 'sylius.ui.currency'|trans }}
-        </div>
-        <div id="locale" class="content">
-            <div class="ui horizontal segments">
-                <div class="ui segment">{{ form_row(form.localeCode) }}</div>
-                <div class="ui segment">{{ form_row(form.currencyCode) }}</div>
-            </div>
-        </div>
-
-        <div id="shipmentsAndPaymentsTab" class="title">
-            <i class="dropdown icon"></i> {{ 'sylius.ui.shipments'|trans }} &amp; {{ 'sylius.ui.payments'|trans }}
-        </div>
-        <div id="shipmentsAndPayments" class="content">
-            <div class="ui segments">
-                <div class="ui segment">
-                    <div class="invalid-data-message">{{ 'sylius_admin_order_creation.ui.shipping_methods_selection_requirement'|trans }}</div>
-                    {{ form_row(form.shipments) }}
+    <div class="accordion" id="orderAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingItems">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseItems" aria-expanded="true" aria-controls="collapseItems">
+                    {{ 'sylius.ui.items'|trans }}
+                </button>
+            </h2>
+            <div id="collapseItems" class="accordion-collapse collapse show" aria-labelledby="headingItems" data-bs-parent="#orderAccordion">
+                <div class="accordion-body">
+                    {{ form_row(form.items) }}
                 </div>
-                <div class="ui segment">
-                    {{ form_row(form.payments) }}
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingAddresses">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAddresses" aria-expanded="false" aria-controls="collapseAddresses">
+                    {{ 'sylius.ui.shipping_address'|trans }} &amp; {{ 'sylius.ui.billing_address'|trans }}
+                </button>
+            </h2>
+            <div id="collapseAddresses" class="accordion-collapse collapse" aria-labelledby="headingAddresses" data-bs-parent="#orderAccordion">
+                <div class="accordion-body row">
+                    <div class="col-md-6">{{ form_row(form.shippingAddress) }}</div>
+                    <div class="col-md-6">{{ form_row(form.billingAddress) }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingLocale">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLocale" aria-expanded="false" aria-controls="collapseLocale">
+                    {{ 'sylius.ui.locale'|trans }} & {{ 'sylius.ui.currency'|trans }}
+                </button>
+            </h2>
+            <div id="collapseLocale" class="accordion-collapse collapse" aria-labelledby="headingLocale" data-bs-parent="#orderAccordion">
+                <div class="accordion-body row">
+                    <div class="col-md-6">{{ form_row(form.localeCode) }}</div>
+                    <div class="col-md-6">{{ form_row(form.currencyCode) }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingShipments">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseShipments" aria-expanded="false" aria-controls="collapseShipments">
+                    {{ 'sylius.ui.shipments'|trans }} &amp; {{ 'sylius.ui.payments'|trans }}
+                </button>
+            </h2>
+            <div id="collapseShipments" class="accordion-collapse collapse" aria-labelledby="headingShipments" data-bs-parent="#orderAccordion">
+                <div class="accordion-body">
+                    <div class="mb-3 text-danger">{{ 'sylius_admin_order_creation.ui.shipping_methods_selection_requirement'|trans }}</div>
+                    <div class="mb-3">{{ form_row(form.shipments) }}</div>
+                    <div>{{ form_row(form.payments) }}</div>
                 </div>
             </div>
         </div>
     </div>
 
     {% with {'paths': {'cancel': path('sylius_admin_order_index')}} %}
-        <div class="ui hidden divider"></div>
-        <div class="ui buttons">
-            <button class="ui labeled icon primary button" type="submit"><i class="plus icon"></i>{{- 'sylius.ui.create'|trans -}}</button>
-            <a href="{{ path|default(app.request.headers.get('referer')) }}" class="ui button">{{ 'sylius.ui.cancel'|trans }}</a>
+        <div class="mt-4 d-flex gap-2">
+            <button class="btn btn-primary" type="submit"><i class="bi bi-plus"></i> {{- 'sylius.ui.create'|trans -}}</button>
+            <a href="{{ path|default(app.request.headers.get('referer')) }}" class="btn btn-secondary">{{ 'sylius.ui.cancel'|trans }}</a>
         </div>
-        <a href="{{ path|default(app.request.headers.get('referer')) }}" class="ui button">{{ 'sylius.ui.cancel'|trans }}</a>
     {% endwith %}
 
     {{ form_row(form._token) }}
