@@ -54,7 +54,13 @@ final class OrderPreviewAction
         $order = $form->handleRequest($request)->getData();
         $this->orderProcessor->process($order);
 
-        return new Response($this->twig->render('@SyliusAdminOrderCreationPlugin/Order/preview.html.twig', [
+        if ($form->isSubmitted() && $form->isValid()) {
+            return new Response($this->twig->render('@SyliusAdminOrderCreationPlugin/Order/preview.html.twig', [
+                'form' => $form->createView(),
+            ]));
+        }
+
+        return new Response($this->twig->render('@SyliusAdminOrderCreationPlugin/Order/create.html.twig', [
             'form' => $form->createView(),
         ]));
     }
