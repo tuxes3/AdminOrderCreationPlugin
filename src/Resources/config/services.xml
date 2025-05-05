@@ -20,11 +20,6 @@
             <argument type="service" id="twig" />
         </service>
 
-        <service id="Sylius\AdminOrderCreationPlugin\OrderProcessing\SetQuantityProcessor">
-            <argument type="service" id="sylius.factory.order_item_unit" />
-            <tag name="sylius.order_processor" priority="9999" />
-        </service>
-
         <service id="Sylius\AdminOrderCreationPlugin\Controller\OrderCreateAction">
             <argument type="service" id="Sylius\AdminOrderCreationPlugin\Factory\OrderFactory" />
             <argument type="service" id="form.factory" />
